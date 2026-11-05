@@ -1,0 +1,59 @@
+openapi: 3.0.3
+info:
+  title: MegaShop-B2B API
+  version: 1.0.0
+  description: API publique de MegaShop-B2B.
+  contact:
+    name: Équipe API MegaShop-B2B
+    email: api@megashop-b2b.com
+servers:
+  - url: https://api.megashop-b2b.com/v1
+tags:
+  - name: Paiements
+    description: Notifications de paiement envoyées par la banque partenaire.
+paths:
+  /payments/webhook:
+    post:
+      operationId: receivePaymentWebhook
+      summary: Notification du résultat d'un paiement
+      description: Appelé par la banque partenaire pour signaler le succès ou l'échec d'une transaction.
+      tags:
+        - Paiements
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookPayload'
+      responses:
+        '204':
+          description: Notification reçue avec succès.
+        '400':
+          description: Requête invalide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Message d'erreur.
+      required:
+        - message
+
+    WebhookPayload:
+      type: object
+      properties:
+        transaction_id:
+          type: string
+          description: Identifiant unique de la transaction.
+        status:
+          type: string
+          description: Statut du paiement (success, failure).
+      required:
+        - transaction_id
+        - status
