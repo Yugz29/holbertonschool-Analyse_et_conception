@@ -38,6 +38,7 @@ components:
   schemas:
     ErrorResponse:
       type: object
+      additionalProperties: false
       properties:
         message:
           type: string
@@ -47,13 +48,19 @@ components:
 
     WebhookPayload:
       type: object
+      additionalProperties: false
       properties:
-        transaction_id:
+        orderId:
+          type: string
+          format: uuid
+        transactionId:
           type: string
           description: Identifiant unique de la transaction.
+          pattern: '^TXN-[0-9]{8}$'
         status:
           type: string
-          description: Statut du paiement (success, failure).
+          enum: [SUCCESS, FAILED]
       required:
-        - transaction_id
+        - orderId
+        - transactionId
         - status
