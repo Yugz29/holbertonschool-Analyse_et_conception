@@ -10,3 +10,4 @@ Projets Holberton School — module **Analyse et conception** : modélisation de
 | [UML_Avance](./UML_Avance) | UML avancé, diagrammes de comportement & patterns architecturaux |
 | [API_first](./API_first) | Conception API-first : contrat OpenAPI du webhook de paiement |
 | [SpecFonct](./SpecFonct) | Spécifications fonctionnelles, User Stories & Gherkin (BDD) |
+| [blueprint_stockmaster](./blueprint_stockmaster) | Capstone : Blueprint (DAT) du module de gestion de stock StockMaster-Pro |
