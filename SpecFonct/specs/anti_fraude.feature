@@ -3,6 +3,9 @@ Feature: Gouvernance et blocage des paiements frauduleux
   Je veux que le système évalue le niveau de risque de chaque paiement
   Afin de bloquer les transactions potentiellement frauduleuses protégeant ainsi l'entreprise
 
+  Background:
+    Given les pays "Syldavie" et "Bordurie" figurent au registre des embargos
+
   @nominal
   Scenario: Validation d'un paiement standard sans risque
     Given un client standard
@@ -13,15 +16,13 @@ Feature: Gouvernance et blocage des paiements frauduleux
   @vip
   Scenario: Exemption de contrôle pour les clients VIP
     Given un client VIP
-    And le pays "Syldavie" figure au registre des embargos
     And une commande d'un montant de 15000 euros à destination de la "Syldavie"
     When le client soumet son paiement
     Then le paiement est accepté par la gouvernance
 
   @limite
   Scenario Outline: Blocage par la gouvernance selon la matrice de risque
-    Given les pays "Syldavie" et "Bordurie" figurent au registre des embargos
-    And un client standard avec une commande de <montant_cmd> euros vers la "<destination>"
+    Given un client standard avec une commande de <montant_cmd> euros vers la "<destination>"
     When le client soumet son paiement
     Then le paiement est <decision> par la gouvernance
 
