@@ -17,3 +17,22 @@ Feature: Gouvernance et blocage des paiements frauduleux
     And une commande d'un montant de 15000 euros à destination de la "Syldavie"
     When le client soumet son paiement
     Then le paiement est accepté par la gouvernance
+
+  @limite
+  Scenario Outline: Blocage par la gouvernance selon la matrice de risque
+    Given les pays "Syldavie" et "Bordurie" figurent au registre des embargos
+    And un client standard avec une commande de <montant_cmd> euros vers la "<destination>"
+    When le client soumet son paiement
+    Then le paiement est <decision> par la gouvernance
+
+    Examples:
+      | montant_cmd | destination | decision |
+      | 9999        | France      | accepté  |
+      | 10000       | France      | accepté  |
+      | 10001       | France      | accepté  |
+      | 9999        | Syldavie    | accepté  |
+      | 10000       | Syldavie    | accepté  |
+      | 10000.01    | Syldavie    | refusé   |
+      | 10001       | Syldavie    | refusé   |
+      | 10000       | Bordurie    | accepté  |
+      | 50000       | Bordurie    | refusé   |
