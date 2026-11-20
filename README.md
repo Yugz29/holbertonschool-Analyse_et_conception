@@ -8,3 +8,5 @@ Projets Holberton School — module **Analyse et conception** : modélisation de
 |---|---|
 | [Modelisation_Relationnelle](./Modelisation_Relationnelle) | Modélisation relationnelle (Merise) & normalisation de la donnée |
 | [UML_Avance](./UML_Avance) | UML avancé, diagrammes de comportement & patterns architecturaux |
+| [API_first](./API_first) | Conception API-first : contrat OpenAPI du webhook de paiement |
+| [SpecFonct](./SpecFonct) | Spécifications fonctionnelles, User Stories & Gherkin (BDD) |
