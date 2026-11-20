@@ -2,7 +2,7 @@
 
 ## Correspondance API ↔ base de données
 
-L'API utilise le camelCase, la base le snake_case. Chaque champ correspond à une seule colonne :
+L'API utilise le camelCase, la base le snake_case. La ressource `/inventory/movements` correspond à la table `mouvement_stock`. Chaque champ correspond à une seule colonne :
 
 | API (`03_api_contract.yaml`) | SQL (`01_database_schema.sql`) | Type API | Type SQL |
 |---|---|---|---|
@@ -41,3 +41,5 @@ sequenceDiagram
 ```
 
 Le `SELECT ... FOR UPDATE` verrouille l'emplacement jusqu'au `COMMIT` ou au `ROLLBACK`. Si deux manutentionnaires déclarent une sortie sur le même emplacement au même moment, la seconde attend la fin de la première et lit le stock à jour : deux sorties ne peuvent pas passer ensemble sur un stock qui n'en couvre qu'une.
+
+La base applique les mêmes règles si l'API est contournée : `CHECK (quantite > 0)` refuse une quantité nulle ou négative, et le trigger `mouvement_stock_jamais_negatif` refuse toute sortie supérieure au stock actuel, avec le même verrou sur l'emplacement.

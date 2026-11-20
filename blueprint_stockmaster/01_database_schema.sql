@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS mouvement_stock CASCADE;
 DROP TABLE IF EXISTS emplacement CASCADE;
 DROP TABLE IF EXISTS produit CASCADE;
 DROP FUNCTION IF EXISTS refuser_modification_mouvement();
+DROP FUNCTION IF EXISTS refuser_stock_negatif();
 
 CREATE TABLE produit (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -43,6 +44,29 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER mouvement_stock_immuable
     BEFORE UPDATE OR DELETE ON mouvement_stock
     FOR EACH ROW EXECUTE FUNCTION refuser_modification_mouvement();
+
+CREATE FUNCTION refuser_stock_negatif() RETURNS trigger AS $$
+DECLARE
+    stock_actuel INT;
+BEGIN
+    IF NEW.type_mouvement = 'SORTIE' THEN
+        PERFORM 1 FROM emplacement WHERE id = NEW.id_emplacement FOR UPDATE;
+        SELECT COALESCE(SUM(CASE type_mouvement WHEN 'ENTREE' THEN quantite ELSE -quantite END), 0)
+            INTO stock_actuel
+            FROM mouvement_stock
+            WHERE id_emplacement = NEW.id_emplacement;
+        IF NEW.quantite > stock_actuel THEN
+            RAISE EXCEPTION 'Stock insuffisant sur l''emplacement % : stock actuel %, sortie demandée %',
+                NEW.id_emplacement, stock_actuel, NEW.quantite;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER mouvement_stock_jamais_negatif
+    BEFORE INSERT ON mouvement_stock
+    FOR EACH ROW EXECUTE FUNCTION refuser_stock_negatif();
 
 -- Stock actuel = somme des entrées - somme des sorties.
 CREATE VIEW stock_emplacement AS
